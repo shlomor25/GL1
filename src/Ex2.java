@@ -1,8 +1,6 @@
-
 import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -10,8 +8,6 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
-
-
 import com.jogamp.newt.Window;
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
@@ -22,115 +18,52 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 
 public class Ex2 extends KeyAdapter implements GLEventListener {
-    //    private float xrot = 0;        // X Rotation ( NEW )
+    private float xrot = 0;
     private float yrot = 0;        // Y Rotation ( NEW )
-    //    private float zrot = 0;        // Z Rotation ( NEW )
     private Texture texture;
     private Texture worldTexture;
-    X player;
-    float playerStep = 0.2f;
-    float cameraAngle = 2;
-    float[] moveAmount = new float[3];
-    public int ball;
+    private Axis player;
+    private final float playerStep = 0.2f;
+    private final float cameraAngle = 2;
+    private int ball;
+
     static GLU glu = new GLU();
     static GLCanvas canvas = new GLCanvas();
     static Frame frame = new Frame("Ex2 Player Movement");
     static Animator animator = new Animator(canvas);
 
+
+
     public void display(GLAutoDrawable drawable) {
-        float	material[] = {0.8f,0.8f,0.8f,1.0f};
-        float	position0[] = {10f,0f,-5f,1.0f};		// red light on the right side (light 0)
-        float	position1[] = {-10f,0f,-5f,1.0f};	// blue light on the left side (light 1)
+        // light
+        float material[] = {1.0f,1.0f,1.0f,1.0f};
+        float position0[] = {10f,0f,-5f,1.0f};  // red light on the right side (light 0)
+        float position1[] = {-10f,0f,-5f,1.0f};	// blue light on the left side (light 1)
 
         final GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();  // Reset The View
 
-        //player.playerMoving(moveAmount[0], moveAmount[1], moveAmount[2]);
-        player.setLookAtPoint();
-        glu.gluLookAt(player.position[0],player.position[1],player.position[2],
-                player.lookAt[0], player.lookAt[1], player.lookAt[2],
-                player.y[0],player.y[1],player.y[2]); //set the camera view that's the y axis
+        player.setLookAt();
+        glu.gluLookAt(player.getPos()[0],player.getPos()[1],player.getPos()[2],
+                player.getLookAt()[0], player.getLookAt()[1], player.getLookAt()[2],
+                player.getY()[0],player.getY()[1],player.getY()[2]); //set the camera view that's the y axis
 
         // Light
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position0, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, position1, 0);
 
         gl.glPushMatrix();
-        gl.glTranslatef(1.0f, 1.0f, -7.0f);
+        gl.glTranslatef(1.0f, 10.0f, -7.0f);
 
         //gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
-        gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef(yrot, 0.0f, -1.0f, 0.0f);
         //gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
 
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
         texture.bind(gl);
 
-        gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
-        gl.glBegin(GL2.GL_QUADS);
-        // Front Face
-        gl.glNormal3f(0,0,1);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        // Back Face
-        gl.glNormal3f(0,0,-1);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        // Top Face
-        gl.glNormal3f(0,1,0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        // Bottom Face
-        gl.glNormal3f(0,-1,0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        // Right face
-        gl.glNormal3f(1,0,0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        // Left Face
-        gl.glNormal3f(-1,0,0);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glEnd();
-        gl.glPopMatrix();
 
         //second cube
         gl.glPushMatrix();
@@ -377,8 +310,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         //zrot += 0.04f;
     }
 
-    public void displayChanged(GLAutoDrawable drawable,
-                               boolean modeChanged, boolean deviceChanged) {}
+    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {}
 
     public void init(GLAutoDrawable drawable) {
 
@@ -395,7 +327,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glEnable(GL.GL_TEXTURE_2D);
         try {
             String filename="resources/Picture1.jpg"; // the FileName to open
-            String fileTexture="resources/space4.jpg";
+            String fileTexture="resources/sky.jpg";
             texture=TextureIO.newTexture(new File( filename ),true);
             worldTexture=TextureIO.newTexture(new File( fileTexture ),true);
         } catch (IOException e) {
@@ -434,7 +366,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 
         ball = make_ball(gl);
         //create the player axis
-        player = new X(playerStep, cameraAngle);
+        player = new Axis(playerStep, cameraAngle);
 
     }
 
@@ -484,6 +416,9 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         return list;
     }
 
+    private void makeCube(){
+
+    }
 
     public void reshape(GLAutoDrawable drawable, int x,
                         int y, int width, int height) {
@@ -532,37 +467,26 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
             //camera move
         } else if (e.getKeyCode()== KeyEvent.VK_I) {
             //up
-            player.cameraMoving(1, "x");
+            player.cameraMoving(1, 'x');
         } else if (e.getKeyCode()== KeyEvent.VK_K) {
             //down
-            player.cameraMoving(-1, "x");
+            player.cameraMoving(-1, 'x');
         } else if (e.getKeyCode()== KeyEvent.VK_L) {
             //right
-            player.cameraMoving(-1, "y");
+            player.cameraMoving(-1, 'y');
         } else if (e.getKeyCode()== KeyEvent.VK_J) {
             //left
-            player.cameraMoving(1, "y");
+            player.cameraMoving(1, 'y');
         } else if (e.getKeyCode()== KeyEvent.VK_O) {
             //right round
-            player.cameraMoving(-1, "z");
+            player.cameraMoving(-1, 'z');
         } else if (e.getKeyCode()== KeyEvent.VK_U) {
             //left round
-            player.cameraMoving(1, "z");
+            player.cameraMoving(1, 'z');
         }
     }
 
-    public void keyReleased(KeyEvent e) {
-
-    	/*if (e.getKeyCode()== KeyEvent.VK_UP) {
-			moveAmount[2] = 0.0f;
-		} else if (e.getKeyCode()== KeyEvent.VK_DOWN) {
-			moveAmount[2] = 0.0f;
-		} else if (e.getKeyCode()== KeyEvent.VK_LEFT) {
-			moveAmount[0] = 0.0f;
-		} else if (e.getKeyCode()== KeyEvent.VK_RIGHT) {
-			moveAmount[0] = 0.0f;
-		}*/
-    }
+    public void keyReleased(KeyEvent e) {}
 
     public void keyTyped(KeyEvent e) {
     }
@@ -573,14 +497,12 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         System.exit(0);
     }
 
-    public float SIN(float x)
-    {
-        return (float)java.lang.Math.sin((float)x*3.14159/180);
+    private float SIN(float x) {
+        return (float)java.lang.Math.sin((float)Math.toRadians(x));
     }
 
-    public float COS(float x)
-    {
-        return (float)java.lang.Math.cos((float)x*3.14159/180);
+    private float COS(float x) {
+        return (float)java.lang.Math.cos((float)Math.toRadians(x));
     }
 
     public static void main(String[] args) {
@@ -610,6 +532,5 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     @Override
     public void dispose(GLAutoDrawable arg0) {
         // TODO Auto-generated method stub
-
     }
 }

@@ -25,18 +25,30 @@ public class Axis {
     public Axis(float step, float angle) {
         this.step = step;
         this.angle = angle;
-        this.x = new float[3];
-        this.y= new float[3];
-        this.z= new float[3];
-        this.pos = new float[3];
-        this.lookAt = new float[3];
-        this.TM = new float[3][3];
+        this.x = new float[LEN];
+        this.y= new float[LEN];
+        this.z= new float[LEN];
+        this.pos = new float[LEN];
+        this.lookAt = new float[LEN];
+        this.TM = new float[LEN][LEN];
         x[0] = 1;
         y[1] = 1;
         z[2] = -1;
         setTM();
     }
 
+
+    public float[] getPos() {
+        return pos;
+    }
+
+    public float[] getLookAt() {
+        return lookAt;
+    }
+
+    public float[] getY() {
+        return y;
+    }
 
     /**
      * Normalize coordinates.
@@ -60,13 +72,13 @@ public class Axis {
      * @param v vector
      * @return length
      */
-    private float norm(float[] v){
-        return (float) Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-    }
+    private float norm(float[] v){ return (float) Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); }
 
 
     /**
      * set trans matrix.
+     *
+     * put x y z as cols.
      */
     private void setTM() {
         for (int i = 0; i < LEN; i++) {
@@ -80,7 +92,7 @@ public class Axis {
     /**
      * Set look at.
      */
-    private void setLookAt() {
+    public void setLookAt() {
         for (int i=0; i<LEN; i++){
             this.lookAt[i] = this.pos[i] + this.z[i];
         }
@@ -89,6 +101,7 @@ public class Axis {
 
     /**
      * Add two vectors.
+     *
      * @param x vec1
      * @param y vec2
      * @return addition.
@@ -150,7 +163,6 @@ public class Axis {
      * @param axis axis
      */
     public void cameraMoving(float angle_step, char axis) {
-
         float[] new_x = this.x;
         float[] new_y = this.y;
         float[] new_z = this.z;

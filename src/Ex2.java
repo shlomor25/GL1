@@ -18,20 +18,84 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 
 public class Ex2 extends KeyAdapter implements GLEventListener {
-    private float xrot = 0;
     private float yrot = 0;        // Y Rotation ( NEW )
     private Texture texture;
     private Texture worldTexture;
     private Axis player;
     private final float playerStep = 0.2f;
     private final float cameraAngle = 2;
-    private int ball;
 
     static GLU glu = new GLU();
     static GLCanvas canvas = new GLCanvas();
     static Frame frame = new Frame("Ex2 Player Movement");
     static Animator animator = new Animator(canvas);
 
+
+    private void makeCube(GL2 gl){
+        gl.glBegin(GL2.GL_QUADS);
+        // Front Face - box
+        gl.glNormal3f(0,0,1);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1f, 0.0f);
+        gl.glVertex3f(1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1f, 1.0f);
+        gl.glVertex3f(1.0f, 1.0f, 1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+        // Back Face
+        gl.glNormal3f(0,0,-1);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(1.0f, -1.0f, -1.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(1.0f, 1.0f, -1.0f);
+        // Top Face
+        gl.glNormal3f(0,1,0);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(1.0f, 1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(1.0f, 1.0f, -1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+        // Bottom Face
+        gl.glNormal3f(0,-1,0);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(1.0f, -1.0f, -1.0f);
+        // Right face
+        gl.glNormal3f(1,0,0);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(1.0f, -1.0f, -1.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(1.0f, 1.0f, -1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(1.0f, 1.0f, 1.0f);
+        // Left Face
+        gl.glNormal3f(-1,0,0);
+        gl.glTexCoord2f(0.0f, 0.0f);
+        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
+        gl.glTexCoord2f(1.0f, 0.0f);
+        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
+        gl.glTexCoord2f(1.0f, 1.0f);
+        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
+        gl.glTexCoord2f(0.0f, 1.0f);
+        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
+        gl.glEnd();
+        gl.glPopMatrix();
+    }
 
 
     public void display(GLAutoDrawable drawable) {
@@ -63,7 +127,8 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
         texture.bind(gl);
-
+        gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
+        makeCube(gl);
 
         //second cube
         gl.glPushMatrix();
@@ -78,69 +143,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         texture.bind(gl);
 
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
-        gl.glBegin(GL2.GL_QUADS);
-        // Front Face
-        gl.glNormal3f(0,0,1);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        // Back Face
-        gl.glNormal3f(0,0,-1);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        // Top Face
-        gl.glNormal3f(0,1,0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        // Bottom Face
-        gl.glNormal3f(0,-1,0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        // Right face
-        gl.glNormal3f(1,0,0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        // Left Face
-        gl.glNormal3f(-1,0,0);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glEnd();
-        gl.glPopMatrix();
+        makeCube(gl);
 
         //3th cube
         gl.glPushMatrix();
@@ -155,70 +158,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         texture.bind(gl);
 
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
-        gl.glBegin(GL2.GL_QUADS);
-        // Front Face
-        gl.glNormal3f(0,0,1);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        // Back Face
-        gl.glNormal3f(0,0,-1);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        // Top Face
-        gl.glNormal3f(0,1,0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        // Bottom Face
-        gl.glNormal3f(0,-1,0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        // Right face
-        gl.glNormal3f(1,0,0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        // Left Face
-        gl.glNormal3f(-1,0,0);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glEnd();
-        gl.glPopMatrix();
-
+        makeCube(gl);
 
         //world cube
         gl.glPushMatrix();
@@ -231,86 +171,18 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         worldTexture.bind(gl);
 
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
-        gl.glBegin(GL2.GL_QUADS);
-
-        // Front Face
-        gl.glNormal3f(0,0,1);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        // Back Face
-        gl.glNormal3f(0,0,-1);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        // Top Face
-        gl.glNormal3f(0,1,0);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        // Bottom Face
-        gl.glNormal3f(0,-1,0);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        // Right face
-        gl.glNormal3f(1,0,0);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, -1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(1.0f, -1.0f, 1.0f);
-        // Left Face
-        gl.glNormal3f(-1,0,0);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, -1.0f);
-        gl.glTexCoord2f(1.0f, 0.0f);
-        gl.glVertex3f(-1.0f, -1.0f, 1.0f);
-        gl.glTexCoord2f(1.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, 1.0f);
-        gl.glTexCoord2f(0.0f, 1.0f);
-        gl.glVertex3f(-1.0f, 1.0f, -1.0f);
-        gl.glEnd();
-        gl.glPopMatrix();
-
+        makeCube(gl);
         gl.glPushMatrix();
         gl.glColor3f(0.0f, 1.0f, 1.0f);
-        gl.glCallList(ball);
         gl.glPopMatrix();
         gl.glEnd();
         gl.glFlush();
-
-
 
         //xrot += 0.03f;
         yrot += 0.05f;
         //zrot += 0.04f;
     }
 
-    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {}
 
     public void init(GLAutoDrawable drawable) {
 
@@ -363,65 +235,13 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
             java.awt.Component comp = (java.awt.Component) drawable;
             new AWTKeyAdapter(this, drawable).addTo(comp);
         }
-
-        ball = make_ball(gl);
         //create the player axis
         player = new Axis(playerStep, cameraAngle);
 
     }
 
-    public int make_ball(GL2 gl)
-    {
-        int list;
-        float a, b;
-        float da = 18.0f, db = 18.0f;
-        float radius = 1.0f;
-        int color;
-        float x, y, z;
 
-        list = gl.glGenLists(1);
-
-        gl.glNewList(list, GL2.GL_COMPILE);
-
-        color = 0;
-        for (a = -90.0f; a + da <= 90.0; a += da) {
-
-            gl.glBegin(GL2.GL_QUAD_STRIP);
-            for (b = 0.0f; b <= 360.0; b += db) {
-
-                if (color>0) {
-                    gl.glColor3f(1.0f, 0.0f, 0.0f);
-                } else {
-                    gl.glColor3f(1.0f, 1.0f, 1.0f);
-                }
-
-                x = radius * COS(b) * COS(a);
-                y = radius * SIN(b) * COS(a);
-                z = radius * SIN(a);
-                gl.glVertex3f(x, y, z);
-
-                x = radius * COS(b) * COS(a + da);
-                y = radius * SIN(b) * COS(a + da);
-                z = radius * SIN(a + da);
-                gl.glVertex3f(x, y, z);
-
-                color = 1 - color;
-            }
-            gl.glEnd();
-
-        }
-
-        gl.glEndList();
-
-        return list;
-    }
-
-    private void makeCube(){
-
-    }
-
-    public void reshape(GLAutoDrawable drawable, int x,
-                        int y, int width, int height) {
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL2 gl = drawable.getGL().getGL2();
         if(height <= 0) {
             height = 1;
@@ -434,83 +254,72 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glLoadIdentity();
     }
 
+    /**
+     * Get key and apply the right method.
+     *
+     * @param e key
+     */
     public void keyPressed(KeyEvent e) {
-
-        if (e.getKeyCode()== KeyEvent.VK_ESCAPE) {
-            System.exit(0);
-
-            //player move
-        } else if (e.getKeyCode()== KeyEvent.VK_W) {
-            //front
-            //moveAmount[2] += -0.1f;
-            player.playerMoving(0, 0, 1);
-        } else if (e.getKeyCode()== KeyEvent.VK_S) {
-            //back
-            //moveAmount[2] += 0.1f;
-            player.playerMoving(0, 0, -1);
-        } else if (e.getKeyCode()== KeyEvent.VK_A) {
-            //left
-            //moveAmount[0] += -0.1f;
-            player.playerMoving(-1, 0, 0);
-        } else if (e.getKeyCode()== KeyEvent.VK_D) {
-            //right
-            //moveAmount[0] += 0.1f;
-            player.playerMoving(1, 0, 0);
-        } else if (e.getKeyCode()== KeyEvent.VK_E) {
-            //moveAmount[0] += 0.1f;
-            player.playerMoving(0, 1, 0);
-        } else if (e.getKeyCode()== KeyEvent.VK_Q) {
-            //moveAmount[0] += 0.1f;
-            player.playerMoving(0, -1, 0);
-
-
-            //camera move
-        } else if (e.getKeyCode()== KeyEvent.VK_I) {
-            //up
-            player.cameraMoving(1, 'x');
-        } else if (e.getKeyCode()== KeyEvent.VK_K) {
-            //down
-            player.cameraMoving(-1, 'x');
-        } else if (e.getKeyCode()== KeyEvent.VK_L) {
-            //right
-            player.cameraMoving(-1, 'y');
-        } else if (e.getKeyCode()== KeyEvent.VK_J) {
-            //left
-            player.cameraMoving(1, 'y');
-        } else if (e.getKeyCode()== KeyEvent.VK_O) {
-            //right round
-            player.cameraMoving(-1, 'z');
-        } else if (e.getKeyCode()== KeyEvent.VK_U) {
-            //left round
-            player.cameraMoving(1, 'z');
+        switch (e.getKeyCode()){
+            case KeyEvent.VK_ESCAPE:
+                exit();
+                break;
+            case KeyEvent.VK_W:
+                player.playerMoving(0, 0, 1);
+                break;
+            case KeyEvent.VK_S:
+                player.playerMoving(0, 0, -1);
+                break;
+            case KeyEvent.VK_A:
+                player.playerMoving(-1, 0, 0);
+                break;
+            case KeyEvent.VK_D:
+                player.playerMoving(1, 0, 0);
+                break;
+            case KeyEvent.VK_E:
+                player.playerMoving(0, 1, 0);
+                break;
+            case KeyEvent.VK_Q:
+                player.playerMoving(0, -1, 0);
+                break;
+            case KeyEvent.VK_I:
+                player.cameraMoving(1, 'x');
+                break;
+            case KeyEvent.VK_K:
+                player.cameraMoving(-1, 'x');
+                break;
+            case KeyEvent.VK_L:
+                player.cameraMoving(-1, 'y');
+                break;
+            case KeyEvent.VK_J:
+                player.cameraMoving(1, 'y');
+                break;
+            case KeyEvent.VK_O:
+                player.cameraMoving(-1, 'z');
+                break;
+            case KeyEvent.VK_U:
+                player.cameraMoving(1, 'z');
+                break;
         }
     }
 
-    public void keyReleased(KeyEvent e) {}
-
-    public void keyTyped(KeyEvent e) {
-    }
-
+    /**
+     * Safe exit.
+     */
     public static void exit(){
         animator.stop();
         frame.dispose();
         System.exit(0);
     }
 
-    private float SIN(float x) {
-        return (float)java.lang.Math.sin((float)Math.toRadians(x));
-    }
 
-    private float COS(float x) {
-        return (float)java.lang.Math.cos((float)Math.toRadians(x));
-    }
-
+    /**
+     * Main.
+     */
     public static void main(String[] args) {
         canvas.addGLEventListener(new Ex2());
         frame.add(canvas);
         frame.setSize(1280, 720);
-//		frame.setUndecorated(true);
-//		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
                 // Run this on another thread than the AWT event queue to
@@ -529,8 +338,10 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         canvas.requestFocus();
     }
 
+
     @Override
-    public void dispose(GLAutoDrawable arg0) {
-        // TODO Auto-generated method stub
-    }
+    public void dispose(GLAutoDrawable arg0) {}
+    public void keyReleased(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {}
+    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {}
 }

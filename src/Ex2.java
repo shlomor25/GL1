@@ -19,11 +19,12 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 public class Ex2 extends KeyAdapter implements GLEventListener {
     private float yrot = 0;        // Y Rotation ( NEW )
-    private Texture texture;
+    private Texture boxTexture;
     private Texture worldTexture;
+    private Texture darthTexture;
+    private Texture genesisTexture;
+    private Texture spaceTexture;
     private Axis player;
-    private final float playerStep = 0.2f;
-    private final float cameraAngle = 2;
 
     static GLU glu = new GLU();
     static GLCanvas canvas = new GLCanvas();
@@ -98,7 +99,53 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     }
 
 
+    private void setTexture(){
+        try {
+            String box="resources/box.jpg"; // the FileName to open
+            String sky="resources/sky.jpg";
+            String darth = "resources/space4.jpg";
+            String space = "resources/space2.jpg";
+            String genesis= "resources/space1.jpg";
+            boxTexture =TextureIO.newTexture(new File( box ),true);
+            worldTexture=TextureIO.newTexture(new File( sky ),true);
+            darthTexture = TextureIO.newTexture(new File( darth ),true);
+            spaceTexture = TextureIO.newTexture(new File( space ),true);
+            genesisTexture = TextureIO.newTexture(new File( genesis),true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void setLight(GL2 gl){
+        float ambient[] = {0.1f,0.1f,0.1f,1.0f};
+        float diffuse0[] = {1f,0f,0f,1.0f};
+        float diffuse1[] = {0f,0f,1f,1.0f};
+        gl.glShadeModel(GL2.GL_SMOOTH);
+        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
+        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuse0, 0);
+        gl.glEnable(GL2.GL_LIGHT0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, ambient, 0);
+        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuse1, 0);
+        gl.glEnable(GL2.GL_LIGHT1);
+        gl.glEnable(GL2.GL_LIGHTING);
+    }
+
+
+    private void setKeyboard(GLAutoDrawable drawable){
+        if (drawable instanceof Window) {
+            Window window = (Window) drawable;
+            window.addKeyListener(this);
+        } else if (GLProfile.isAWTAvailable() && drawable instanceof java.awt.Component) {
+            java.awt.Component comp = (java.awt.Component) drawable;
+            new AWTKeyAdapter(this, drawable).addTo(comp);
+        }
+    }
+
+
     public void display(GLAutoDrawable drawable) {
+
         // light
         float material[] = {1.0f,1.0f,1.0f,1.0f};
         float position0[] = {10f,0f,-5f,1.0f};  // red light on the right side (light 0)
@@ -117,61 +164,48 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position0, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, position1, 0);
 
+
+        //first cube
         gl.glPushMatrix();
         gl.glTranslatef(1.0f, 10.0f, -7.0f);
-
-        //gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
         gl.glRotatef(yrot, 0.0f, -1.0f, 0.0f);
-        //gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
-
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        texture.bind(gl);
+        genesisTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
 
         //second cube
         gl.glPushMatrix();
         gl.glTranslatef(5.0f, 1.0f, -14.0f);
-
-        //gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
         gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-        //gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
-
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        texture.bind(gl);
-
+        spaceTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
 
         //3th cube
         gl.glPushMatrix();
         gl.glTranslatef(10.0f, 1.0f, -14.0f);
-
-        //gl.glRotatef(xrot, 1.0f, 0.0f, 0.0f);
         gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-        //gl.glRotatef(zrot, 0.0f, 0.0f, 1.0f);
-
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        texture.bind(gl);
-
+        boxTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
 
         //world cube
         gl.glPushMatrix();
-
         gl.glTranslatef(0.0f, 59.0f, -58.0f);
+        // scale
         gl.glScalef(60.0f, 60.0f, 60.0f);
-
         gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
         gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
         worldTexture.bind(gl);
-
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
+
         gl.glPushMatrix();
         gl.glColor3f(0.0f, 1.0f, 1.0f);
         gl.glPopMatrix();
@@ -185,8 +219,10 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 
 
     public void init(GLAutoDrawable drawable) {
-
         final GL2 gl = drawable.getGL().getGL2();
+        final float playerStep = 0.2f;
+        final float cameraAngle = 2;
+
         gl.glShadeModel(GL2.GL_SMOOTH);              // Enable Smooth Shading
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);    // Black Background
         gl.glClearDepth(1.0f);                      // Depth Buffer Setup
@@ -197,47 +233,18 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 
         // Texture
         gl.glEnable(GL.GL_TEXTURE_2D);
-        try {
-            String filename="resources/Picture1.jpg"; // the FileName to open
-            String fileTexture="resources/sky.jpg";
-            texture=TextureIO.newTexture(new File( filename ),true);
-            worldTexture=TextureIO.newTexture(new File( fileTexture ),true);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        setTexture();
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 
         // Light
-        float	ambient[] = {0.1f,0.1f,0.1f,1.0f};
-        float	diffuse0[] = {1f,0f,0f,1.0f};
-        float	diffuse1[] = {0f,0f,1f,1.0f};
-
-
-        gl.glShadeModel(GL2.GL_SMOOTH);
-
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
-        gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuse0, 0);
-        gl.glEnable(GL2.GL_LIGHT0);
-
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_AMBIENT, ambient, 0);
-        gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuse1, 0);
-        gl.glEnable(GL2.GL_LIGHT1);
-
-        gl.glEnable(GL2.GL_LIGHTING);
+        setLight(gl);
 
         // Keyboard
-        if (drawable instanceof Window) {
-            Window window = (Window) drawable;
-            window.addKeyListener(this);
-        } else if (GLProfile.isAWTAvailable() && drawable instanceof java.awt.Component) {
-            java.awt.Component comp = (java.awt.Component) drawable;
-            new AWTKeyAdapter(this, drawable).addTo(comp);
-        }
+        setKeyboard(drawable);
+
         //create the player axis
         player = new Axis(playerStep, cameraAngle);
-
     }
 
 
@@ -253,6 +260,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
     }
+
 
     /**
      * Get key and apply the right method.
@@ -303,10 +311,11 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         }
     }
 
+
     /**
      * Safe exit.
      */
-    public static void exit(){
+    private static void exit(){
         animator.stop();
         frame.dispose();
         System.exit(0);

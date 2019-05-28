@@ -8,6 +8,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
+
 import com.jogamp.newt.Window;
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
@@ -18,8 +19,10 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 
 public class Ex2 extends KeyAdapter implements GLEventListener {
-    private float yrot = 0;        // Y Rotation ( NEW )
-    private Texture boxTexture;
+    private float yrot = 0;
+    private Texture woodTexture;
+    private Texture iceTexture;
+    private Texture stoneTexture;
     private Texture worldTexture;
     private Texture darthTexture;
     private Texture genesisTexture;
@@ -32,10 +35,10 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     static Animator animator = new Animator(canvas);
 
 
-    private void makeCube(GL2 gl){
+    private void makeCube(GL2 gl) {
         gl.glBegin(GL2.GL_QUADS);
         // Front Face - box
-        gl.glNormal3f(0,0,1);
+        gl.glNormal3f(0, 0, 1);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-1.0f, -1.0f, 1.0f);
         gl.glTexCoord2f(1f, 0.0f);
@@ -45,7 +48,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(-1.0f, 1.0f, 1.0f);
         // Back Face
-        gl.glNormal3f(0,0,-1);
+        gl.glNormal3f(0, 0, -1);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(1.0f, -1.0f, -1.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -55,7 +58,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(1.0f, 1.0f, -1.0f);
         // Top Face
-        gl.glNormal3f(0,1,0);
+        gl.glNormal3f(0, 1, 0);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-1.0f, 1.0f, 1.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -65,7 +68,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(-1.0f, 1.0f, -1.0f);
         // Bottom Face
-        gl.glNormal3f(0,-1,0);
+        gl.glNormal3f(0, -1, 0);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(1.0f, -1.0f, 1.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -75,7 +78,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(1.0f, -1.0f, -1.0f);
         // Right face
-        gl.glNormal3f(1,0,0);
+        gl.glNormal3f(1, 0, 0);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(1.0f, -1.0f, 1.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -85,7 +88,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(1.0f, 1.0f, 1.0f);
         // Left Face
-        gl.glNormal3f(-1,0,0);
+        gl.glNormal3f(-1, 0, 0);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex3f(-1.0f, -1.0f, -1.0f);
         gl.glTexCoord2f(1.0f, 0.0f);
@@ -95,22 +98,25 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glTexCoord2f(0.0f, 1.0f);
         gl.glVertex3f(-1.0f, 1.0f, -1.0f);
         gl.glEnd();
-        gl.glPopMatrix();
     }
 
 
-    private void setTexture(){
+    private void setTexture() {
         try {
-            String box="resources/box.jpg"; // the FileName to open
-            String sky="resources/sky.jpg";
-            String darth = "resources/space4.jpg";
-            String space = "resources/space2.jpg";
-            String genesis= "resources/space1.jpg";
-            boxTexture =TextureIO.newTexture(new File( box ),true);
-            worldTexture=TextureIO.newTexture(new File( sky ),true);
-            darthTexture = TextureIO.newTexture(new File( darth ),true);
-            spaceTexture = TextureIO.newTexture(new File( space ),true);
-            genesisTexture = TextureIO.newTexture(new File( genesis),true);
+            String wood = "resources/wood1.jpg"; // the FileName to open
+            String stone = "resources/stone4.jpg";
+            String ice = "resources/ice1.jpg";
+            String sky = "resources/sky.jpg";
+            String darth = "resources/wood1.jpg";
+            String space = "resources/wood1.jpg";
+            String genesis = "resources/wood1.jpg";
+            woodTexture = TextureIO.newTexture(new File(wood), true);
+            stoneTexture = TextureIO.newTexture(new File(stone), true);
+            iceTexture = TextureIO.newTexture(new File(ice), true);
+            worldTexture = TextureIO.newTexture(new File(sky), true);
+            darthTexture = TextureIO.newTexture(new File(darth), true);
+            spaceTexture = TextureIO.newTexture(new File(space), true);
+            genesisTexture = TextureIO.newTexture(new File(genesis), true);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -118,10 +124,10 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     }
 
 
-    private void setLight(GL2 gl){
-        float ambient[] = {0.1f,0.1f,0.1f,1.0f};
-        float diffuse0[] = {1f,0f,0f,1.0f};
-        float diffuse1[] = {0f,0f,1f,1.0f};
+    private void setLight(GL2 gl) {
+        float ambient[] = {0.1f, 0.1f, 0.1f, 1.0f};
+        float diffuse0[] = {1f, 0f, 0f, 1.0f};
+        float diffuse1[] = {0f, 0f, 1f, 1.0f};
         gl.glShadeModel(GL2.GL_SMOOTH);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuse0, 0);
@@ -133,7 +139,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     }
 
 
-    private void setKeyboard(GLAutoDrawable drawable){
+    private void setKeyboard(GLAutoDrawable drawable) {
         if (drawable instanceof Window) {
             Window window = (Window) drawable;
             window.addKeyListener(this);
@@ -147,18 +153,18 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
 
         // light
-        float material[] = {1.0f,1.0f,1.0f,1.0f};
-        float position0[] = {10f,0f,-5f,1.0f};  // red light on the right side (light 0)
-        float position1[] = {-10f,0f,-5f,1.0f};	// blue light on the left side (light 1)
+        float material[] = {1.0f, 1.0f, 1.0f, 1.0f};
+        float position0[] = {10f, 0f, -5f, 1.0f};  // red light on the right side (light 0)
+        float position1[] = {-10f, 0f, -5f, 1.0f};    // blue light on the left side (light 1)
 
         final GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();  // Reset The View
 
         player.setLookAt();
-        glu.gluLookAt(player.getPos()[0],player.getPos()[1],player.getPos()[2],
+        glu.gluLookAt(player.getPos()[0], player.getPos()[1], player.getPos()[2],
                 player.getLookAt()[0], player.getLookAt()[1], player.getLookAt()[2],
-                player.getY()[0],player.getY()[1],player.getY()[2]); //set the camera view that's the y axis
+                player.getY()[0], player.getY()[1], player.getY()[2]); //set the camera view that's the y axis
 
         // Light
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position0, 0);
@@ -169,42 +175,46 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         gl.glPushMatrix();
         gl.glTranslatef(1.0f, 10.0f, -7.0f);
         gl.glRotatef(yrot, 0.0f, -1.0f, 0.0f);
-        gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
-        gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        genesisTexture.bind(gl);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        stoneTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
+        gl.glPopMatrix();
 
         //second cube
         gl.glPushMatrix();
         gl.glTranslatef(5.0f, 1.0f, -14.0f);
         gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-        gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
-        gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        spaceTexture.bind(gl);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        iceTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
+        gl.glPopMatrix();
 
         //3th cube
         gl.glPushMatrix();
         gl.glTranslatef(10.0f, 1.0f, -14.0f);
         gl.glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-        gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
-        gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
-        boxTexture.bind(gl);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+        woodTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
+        gl.glPopMatrix();
 
         //world cube
         gl.glPushMatrix();
         gl.glTranslatef(0.0f, 59.0f, -58.0f);
         // scale
         gl.glScalef(60.0f, 60.0f, 60.0f);
-        gl.glTexParameteri ( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT );
-        gl.glTexParameteri( GL.GL_TEXTURE_2D,GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT );
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
         worldTexture.bind(gl);
         gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE, material, 0);
         makeCube(gl);
+        gl.glPopMatrix();
 
         gl.glPushMatrix();
         gl.glColor3f(0.0f, 1.0f, 1.0f);
@@ -233,15 +243,15 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 
         // Texture
         gl.glEnable(GL.GL_TEXTURE_2D);
-        setTexture();
+        this.setTexture();
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
 
         // Light
-        setLight(gl);
+        this.setLight(gl);
 
         // Keyboard
-        setKeyboard(drawable);
+        this.setKeyboard(drawable);
 
         //create the player axis
         player = new Axis(playerStep, cameraAngle);
@@ -250,10 +260,11 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL2 gl = drawable.getGL().getGL2();
-        if(height <= 0) {
+        if (height <= 0) {
             height = 1;
         }
-        float h = (float)width / (float)height;
+        float h = (float) width / (float) height;
+        gl.glViewport(0, 0, 2000, 1600); // TODO
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         glu.gluPerspective(50.0f, h, 1.0, 1000.0);
@@ -268,7 +279,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
      * @param e key
      */
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()){
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_ESCAPE:
                 exit();
                 break;
@@ -315,7 +326,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     /**
      * Safe exit.
      */
-    private static void exit(){
+    private static void exit() {
         animator.stop();
         frame.dispose();
         System.exit(0);
@@ -329,28 +340,15 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
         canvas.addGLEventListener(new Ex2());
         frame.add(canvas);
         frame.setSize(1280, 720);
-        frame.addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                // Run this on another thread than the AWT event queue to
-                // make sure the call to Animator.stop() completes before
-                // exiting
-                new Thread(new Runnable() {
-                    public void run() {
-                        animator.stop();
-                        System.exit(0);
-                    }
-                }).start();
-            }
-        });
         frame.setVisible(true);
         animator.start();
         canvas.requestFocus();
     }
 
-
     @Override
-    public void dispose(GLAutoDrawable arg0) {}
-    public void keyReleased(KeyEvent e) {}
-    public void keyTyped(KeyEvent e) {}
-    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {}
+    public void dispose(GLAutoDrawable arg0) {
+    }
+
+    public void keyReleased(KeyEvent e) {
+    }
 }

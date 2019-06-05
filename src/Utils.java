@@ -12,7 +12,7 @@ public class Utils {
 
     public static void initTextures() {
         try{
-            // fileswi' names
+            // files' names
             String stone = "resources/stone4.jpg";
             String ice = "resources/ice1.jpg";
             String wood = "resources/wood1.jpg";

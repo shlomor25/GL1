@@ -1,3 +1,9 @@
+/**
+ * shlomo rabinovich 308432517
+ * ori fogler 318732484
+ */
+
+
 import java.awt.*;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -207,10 +213,10 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
     public static void main(String[] args) {
         canvas.addGLEventListener(new Ex2());
         frame.add(canvas);
-        // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        // frame.setSize(screenSize.width, screenSize.height);
-        // frame.setUndecorated(true);
-        frame.setSize(1280, 720);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setSize(screenSize.width, screenSize.height);
+        frame.setUndecorated(true);
+        // frame.setSize(1280, 720);
         frame.setVisible(true);
         animator.start();
         canvas.requestFocus();

@@ -5,6 +5,8 @@
 
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -149,7 +151,7 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
             height = 1;
         }
         float h = (float) width / (float) height;
-        gl.glViewport(0, 0, 2 * width, 2 * height);
+        gl.glViewport(0, 0, width, height);
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
 
@@ -218,6 +220,12 @@ public class Ex2 extends KeyAdapter implements GLEventListener {
 //        frame.setUndecorated(true);
         frame.setSize(1280, 720);
         frame.setVisible(true);
+        WindowAdapter myWindowAdapter = new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        };
+        frame.addWindowListener(myWindowAdapter);
         animator.start();
         canvas.requestFocus();
     }
